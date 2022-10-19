@@ -9,15 +9,15 @@ from telebot.types import (
     CallbackQuery,
 )
 
-from constants import TELEGRAM_API_TOKEN, HEADERS
 from pinger.sender import get_url, send_data
+from telegram_listener.constants import TELEGRAM_API_TOKEN, HEADERS
 from telegram_listener.utils import (
     parse_message,
     parse_callback,
     create_edit_mode_btn,
     create_view_mode_btn,
     prepare_kb,
-    sent_initial_message,
+    send_initial_message,
     follow_unfollow_device,
 )
 
@@ -74,15 +74,15 @@ def view_devices_btn_handler(cq: CallbackQuery):
 
 
 @bot.callback_query_handler(lambda call: call.data.startswith("follow_dev"))
-def view_devices_btn_handler(cq: CallbackQuery):
+def follow_devices_btn_handler(cq: CallbackQuery):
     cq = follow_unfollow_device(cq=cq, prefix="follow_dev", is_follow=True)
-    manage_network_devices(message=cq, edit_mode=False)
+    manage_network_devices(message=cq, edit_mode=True)
 
 
 @bot.callback_query_handler(lambda call: call.data.startswith("unfollow_dev"))
-def view_devices_btn_handler(cq: CallbackQuery):
+def unfollow_devices_btn_handler(cq: CallbackQuery):
     cq = follow_unfollow_device(cq=cq, prefix="unfollow_dev", is_follow=False)
-    manage_network_devices(message=cq, edit_mode=False)
+    manage_network_devices(message=cq, edit_mode=True)
 
 
 def subscribe_network_handler(message: Message):
@@ -118,7 +118,7 @@ def manage_network_devices(message: Union[Message, CallbackQuery], edit_mode=Fal
     msg_data = {"chat_id": chat_id, "text": network_ssid, "reply_markup": kb}
 
     if message_id == 0:
-        sent_initial_message(bot, msg_data, data)
+        send_initial_message(bot, msg_data, data)
     else:
 
         bot.edit_message_text(message_id=message_id, **msg_data)

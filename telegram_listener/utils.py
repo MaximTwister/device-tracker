@@ -88,12 +88,12 @@ def parse_callback(message: CallbackQuery):
     return network_ssid, user_id, chat_id
 
 
-def sent_initial_message(bot, msg_data, data):
+def send_initial_message(bot, msg_data, data):
     msg: Message = bot.send_message(**msg_data)
     data.update({"telegram_msg_id": msg.message_id, "telegram_chat_id": msg.chat.id})
     url = get_url("register-message")
     res: Response = send_data(url=url, data=data, headers=HEADERS, http_method="post")
-    print(f"register message response: {res.json()}")
+    print(f"{url} response: {res.json()}")
 
 
 def follow_unfollow_device(cq: CallbackQuery, prefix: str, is_follow: bool):

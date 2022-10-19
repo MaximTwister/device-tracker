@@ -80,7 +80,7 @@ class NetworkDevicesSerializer(serializers.ModelSerializer):
 
 class RegisterMessageSerializer(serializers.ModelSerializer):
     telegram_user_id = serializers.IntegerField(source="telegram_account.telegram_user_id")
-    network_ssid = serializers.IntegerField(source="network.ssid")
+    network_ssid = serializers.CharField(source="network.ssid")
     telegram_chat_id = serializers.IntegerField(source="telegram_chat.telegram_chat_id")
 
     class Meta:
