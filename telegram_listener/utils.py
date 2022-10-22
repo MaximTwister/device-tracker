@@ -81,7 +81,7 @@ def parse_message(message: Message):
 def parse_callback(message: CallbackQuery):
     data = message.data.strip()
     for prefix in ["edit_devices_", "view_devices_"]:
-        data = data.strip(prefix)
+        data = data.replace(prefix, "")
     network_ssid = data
     user_id = message.from_user.id
     chat_id = user_id
