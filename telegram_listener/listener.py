@@ -2,6 +2,7 @@ from typing import Union
 
 import telebot
 from requests import Response
+from telebot.apihelper import ApiTelegramException
 from telebot.types import (
     Message,
     InlineKeyboardMarkup,
@@ -120,9 +121,11 @@ def manage_network_devices(message: Union[Message, CallbackQuery], edit_mode=Fal
     if message_id == 0:
         send_initial_message(bot, msg_data, data)
     else:
-
-        bot.edit_message_text(message_id=message_id, **msg_data)
-        print(f"message: {message_id} was edited in chat: {chat_id}")
+        try:
+            bot.edit_message_text(message_id=message_id, **msg_data)
+            print(f"message: {message_id} was edited in chat: {chat_id}")
+        except ApiTelegramException as e:
+            send_initial_message(bot, msg_data, data)
 
 
 if __name__ == "__main__":
