@@ -1,5 +1,11 @@
+from threading import Thread
 from typing import Union
 
+from flask import (
+    Flask,
+    request,
+    jsonify,
+)
 import telebot
 from requests import Response
 from telebot.apihelper import ApiTelegramException
@@ -8,6 +14,8 @@ from telebot.types import (
     InlineKeyboardMarkup,
     InlineKeyboardButton,
     CallbackQuery,
+    User,
+    Chat,
 )
 
 from pinger.sender import get_url, send_data
@@ -23,6 +31,34 @@ from telegram_listener.utils import (
 )
 
 bot = telebot.TeleBot(token=TELEGRAM_API_TOKEN)
+app = Flask(__name__)
+
+@app.route("/update-network-status", methods=["POST"])
+def update_network_status():
+    data = request.get_json()
+    chat_id = data.get("chat_id")
+    network_ssid = data.get("network_ssid")
+
+    user = User(id=chat_id, first_name="", is_bot=False)
+    chat = Chat(id=chat_id, type="")
+    message = Message(
+        message_id=0,
+        chat=chat,
+        from_user=user,
+        content_type="",
+        date="",
+        json_string="",
+        options=[],
+    )
+    message.text = network_ssid
+    manage_network_devices(message=message, edit_mode=False)
+
+    response_data = {
+        "message": f"{network_ssid} devices statuses updated",
+        "status_code": 200,
+    }
+
+    return jsonify(response_data)
 
 
 @bot.message_handler(commands=["start"])
@@ -125,9 +161,13 @@ def manage_network_devices(message: Union[Message, CallbackQuery], edit_mode=Fal
             bot.edit_message_text(message_id=message_id, **msg_data)
             print(f"message: {message_id} was edited in chat: {chat_id}")
         except ApiTelegramException as e:
+            print(f"can not edit message: {message_id} - error: {e}")
             send_initial_message(bot, msg_data, data)
 
 
 if __name__ == "__main__":
     print("bot is pooling ... ")
-    bot.infinity_polling()
+    Thread(target=bot.infinity_polling).start()
+
+    print("flask is running ... ")
+    Thread(target=app.run, kwargs={"host": "127.0.0.1", "port": 5000}).start()

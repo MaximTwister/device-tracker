@@ -1,3 +1,8 @@
 from django.contrib import admin
 
-# Register your models here.
+from collector.models import Device
+
+
+@admin.register(Device)
+class DeviceAdmin(admin.ModelAdmin):
+    list_display = ["ipv4", "mac_addr", "name", "type", "owner"]

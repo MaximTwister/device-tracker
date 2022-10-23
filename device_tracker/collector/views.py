@@ -24,8 +24,8 @@ from collector.utils import (
     get_or_create_device,
     maintain_device_sessions,
     maintain_missed_pings,
-    notify_device_statuses,
-    get_telegram_account_status,
+    notify_network_subscribers,
+    verify_telegram_account,
     get_telegram_msg_for_network,
 )
 
@@ -63,7 +63,7 @@ class UpdateCreateSessionView(APIView):
                 live_mac_addresses.append(mac_addr)
 
             maintain_missed_pings(ssid, live_mac_addresses)
-            notify_device_statuses(ssid, live_mac_addresses)
+            notify_network_subscribers(ssid)
 
             return Response(data=serializer.data, status=status.HTTP_200_OK)
         else:
@@ -80,7 +80,7 @@ class TelegramAccountView(APIView):
         print(f"user was found: {user}")
         serializer = TelegramAccountSerializer(data=request.data)
         if serializer.is_valid():
-            account_status = get_telegram_account_status(serializer.data, user)
+            account_status = verify_telegram_account(serializer.data, user)
             data = {"account_status": account_status}
             return Response(data=data, status=status.HTTP_200_OK)
 

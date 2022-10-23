@@ -9,6 +9,10 @@ __pycache__/
 # JetBrains
 .idea
 
+# Project
+device_tracker/collector/migrations
+schemas
+
 # Distribution / packaging
 .Python
 build/

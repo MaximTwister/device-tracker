@@ -86,17 +86,6 @@ class Session(models.Model):
     start = models.DateTimeField(auto_now=True)
     end = models.DateTimeField(null=True)
 
-    #
-    # 1. We receive info from pinger {network: HomeWiFi, mac_addr: <>}
-    # 2. [table Device] -> Device.objects.get(mac_addr=mac_addr) -> get device_model
-    # 3. [table Network] -> Device.objects.get(ssid=HomeWiFi) -> get network_model
-    # 4. [table Sessions] -> Device.objects.get(
-    #                                  network=network_model
-    #                                  device=device_model
-    #                                  status = ACTIVE
-    #                                  ) -> session_model -> NOTHING TO DO
-    #
-
 
 class Device(models.Model):
 
@@ -108,6 +97,7 @@ class Device(models.Model):
         PC = "PC", "personal computer"
         WATCH = "WT", "watch"
         ROUTER = "RT", "router"
+        PLAY_STATION = "PS", "play station"
 
     ipv4 = models.GenericIPAddressField(protocol="IPv4")
     mac_addr = models.CharField(max_length=17, unique=True)

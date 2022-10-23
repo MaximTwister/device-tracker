@@ -24,11 +24,11 @@ def prepare_kb(network_ssid: str, devices: list, edit_mode: bool) -> InlineKeybo
         device_status = get_device_status(device.get("missed_pings"))
         last_modified = get_device_last_modified(device.get("last_modified"))
         name = device.get("name")
-        device_icon = DEVICE_ICONS.get(device.get("device_type"))
+        device_icon = DEVICE_ICONS.get(device.get("type"))
         device_id = device.get("id")
         is_followed_by_user = device.get("is_followed_by_user")
 
-        text = f"{device_icon} {name} is {device_status} - {last_modified}"
+        text = f"{device_icon} {name} {device_status} - {last_modified} UTC"
         device_btn = InlineKeyboardButton(text=text, callback_data=f"device_{device_id}")
 
         if not edit_mode:
@@ -89,6 +89,7 @@ def parse_callback(message: CallbackQuery):
 
 
 def send_initial_message(bot, msg_data, data):
+    print(f"send initial message: {msg_data} ")
     msg: Message = bot.send_message(**msg_data)
     data.update({"telegram_msg_id": msg.message_id, "telegram_chat_id": msg.chat.id})
     url = get_url("register-message")
@@ -113,7 +114,7 @@ def follow_unfollow_device(cq: CallbackQuery, prefix: str, is_follow: bool):
 
 
 def get_device_status(missed_pings):
-    return "Up" if missed_pings == 0 else "Degraded"
+    return "🟢" if missed_pings == 0 else "🟡"
 
 
 def get_device_last_modified(date_time: str) -> str:
